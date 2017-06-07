@@ -1,5 +1,5 @@
-# mead
-Mead - Dead simple markdown editor for Windows, Linux and Mac
+# Mead
+Dead simple markdown editor for Windows, Linux and Mac
 
 ![Mead markdown editor](preview-macos.jpg)
 
