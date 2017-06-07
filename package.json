@@ -1,0 +1,18 @@
+{
+  "name": "mead",
+  "version": "0.1.0",
+  "description": "Markdown editor",
+  "main": "source/app/index.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Perry Mitchell <perry@perrymitchell.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^1.6.10"
+  },
+  "dependencies": {
+    "minimist": "^1.2.0"
+  }
+}
