@@ -30,6 +30,23 @@
 
     <textarea id="main"></textarea>
     <script>
+        const path = require("path");
+        function fixMDImages(text) {
+            var exp = /!\[([^\]]+)\]\(([^\)]+)\)/g,
+                matches,
+                newText = text;
+            while (matches = exp.exec(text)) {
+                const itemPath = matches[2];
+                if (/^(https?|file):\/\//.test(itemPath) === false) {
+                    const newPath = path.resolve(process.cwd(), itemPath);
+                    newText = newText.replace(
+                        matches[0],
+                        "![" + matches[1] + "](" + "file://" + newPath + ")"
+                    );
+                }
+            }
+            return newText;
+        }
         var ta = document.getElementById("main");
         var simplemde = new SimpleMDE({
             element: ta,
@@ -41,6 +58,9 @@
             },
             blockStyles: {
                 italic: "_"
+            },
+            previewRender: function(text) {
+                return simplemde.markdown(fixMDImages(text));
             },
             renderingConfig: {
                 codeSyntaxHighlighting: true
