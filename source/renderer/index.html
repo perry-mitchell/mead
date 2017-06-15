@@ -1,114 +1,118 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Mead • Markdown Editor</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
-  </head>
-  <body>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
-    <link rel="stylesheet" href="simplemde.css">
-    <style type="text/css">
-        html {
-            height: 100%;
-        }
-        body {
-            height: 80%;
-        }
-        .CodeMirror {
-            height: 100%;
-            font-family: 'Roboto Mono', monospace;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <title>Mead • Markdown Editor</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
+    </head>
+    <body>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
+        <link rel="stylesheet" href="simplemde.css">
+        <style type="text/css">
+            html {
+                height: 100%;
+            }
+            body {
+                height: 80%;
+            }
+            .CodeMirror {
+                height: 100%;
+                font-family: 'Roboto Mono', monospace;
+            }
+            .editor-preview-side {
+                font-family: 'Muli', sans-serif;
+            }
+        </style>
+        <script type="text/javascript" src="simplemde.js"></script>
 
-        .editor-preview-side {
-            font-family: 'Muli', sans-serif;
-        }
-    </style>
-    <script type="text/javascript" src="simplemde.js"></script>
-
-    <textarea id="main"></textarea>
-    <script>
-        const path = require("path");
-        function fixMDImages(text) {
-            var exp = /!\[([^\]]+)\]\(([^\)]+)\)/g,
-                matches,
-                newText = text;
-            while (matches = exp.exec(text)) {
-                const itemPath = matches[2];
-                if (/^(https?|file):\/\//.test(itemPath) === false) {
-                    const newPath = path.resolve(process.cwd(), itemPath);
-                    newText = newText.replace(
-                        matches[0],
-                        "![" + matches[1] + "](" + "file://" + newPath + ")"
-                    );
+        <textarea id="main"></textarea>
+        <script>
+            const path = require("path");
+            function fixMDImages(text) {
+                var exp = /!\[([^\]]+)\]\(([^\)]+)\)/g,
+                    matches,
+                    newText = text;
+                while (matches = exp.exec(text)) {
+                    const itemPath = matches[2];
+                    if (/^(https?|file):\/\//.test(itemPath) === false) {
+                        const newPath = path.resolve(process.cwd(), itemPath);
+                        newText = newText.replace(
+                            matches[0],
+                            "![" + matches[1] + "](" + "file://" + newPath + ")"
+                        );
+                    }
                 }
+                return newText;
             }
-            return newText;
-        }
-        var ta = document.getElementById("main");
-        var simplemde = new SimpleMDE({
-            element: ta,
-            autoDownloadFontAwesome: true,
-            autofocus: true,
-            autosave: {
-                enabled: false,
-                uniqueId: "mead-dev"
-            },
-            blockStyles: {
-                italic: "_"
-            },
-            previewRender: function(text) {
-                return simplemde.markdown(fixMDImages(text));
-            },
-            renderingConfig: {
-                codeSyntaxHighlighting: true
-            },
-            status: false,
-            toolbar: [
-                "bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "strikethrough", "|",
-                "link", "image", "|", "side-by-side"
-            ]
-        });
-        simplemde.toggleFullScreen();
-        simplemde.toggleSideBySide();
-    </script>
-    <script>
-        const dirtyTitle = /^\* /;
-        var windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
-        var ipc = require('electron').ipcRenderer;
-        ipc.on("setContents", (event, data) => {
-            simplemde.value(data.contents);
-            document.title = `${data.filename} • Mead`;
-        });
-        ipc.on("setFilename", (event, data) => {
-            document.title = `${data.filename} • Mead`;
-        });
-        ipc.on("saveNow", () => {
-            ipc.send("save", {
-                windowID,
-                contents: simplemde.value()
+            var ta = document.getElementById("main");
+            var simplemde = new SimpleMDE({
+                element: ta,
+                autoDownloadFontAwesome: true,
+                autofocus: true,
+                autosave: {
+                    enabled: false,
+                    uniqueId: "mead-dev"
+                },
+                blockStyles: {
+                    italic: "_"
+                },
+                previewRender: function (text) {
+                    return simplemde.markdown(fixMDImages(text));
+                },
+                renderingConfig: {
+                    codeSyntaxHighlighting: true
+                },
+                status: false,
+                toolbar: [
+                    "bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|",
+                    "strikethrough", "|",
+                    "link", "image", "|", "side-by-side"
+                ]
             });
-        });
-        ipc.on("setDirty", (evt, info) => {
-            const { dirty } = info;
-            const titleIsDirty = dirtyTitle.test(document.title);
-            if (dirty && !titleIsDirty) {
-                document.title = "* " + document.title;
-            } else if (!dirty && titleIsDirty) {
-                document.title = document.title.replace(dirtyTitle, "");
-            }
-        });
-        setTimeout(function() {
-            ipc.send("editorReady", { windowID });
-        }, 0);
-        simplemde.codemirror.on("change", function(){
-            ipc.send("edit", {
-                windowID,
-                contents: simplemde.value()
+            simplemde.toggleFullScreen();
+            simplemde.toggleSideBySide();
+        </script>
+        <script>
+            const dirtyTitle = /^\* /;
+            var windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
+            var ipc = require('electron').ipcRenderer;
+            ipc.on("setContents", (event, data) => {
+                simplemde.value(data.contents);
+                document.title = `${data.filename} • Mead`;
             });
-        });
-    </script>
-  </body>
+            ipc.on("setFilename", (event, data) => {
+                document.title = `${data.filename} • Mead`;
+            });
+            ipc.on("saveNow", () => {
+                ipc.send("save", {
+                    windowID,
+                    contents: simplemde.value()
+                });
+            });
+            ipc.on("setDirty", (evt, info) => {
+                const {
+                    dirty
+                } = info;
+                const titleIsDirty = dirtyTitle.test(document.title);
+                if (dirty && !titleIsDirty) {
+                    document.title = "* " + document.title;
+                } else if (!dirty && titleIsDirty) {
+                    document.title = document.title.replace(dirtyTitle, "");
+                }
+            });
+            setTimeout(function () {
+                ipc.send("editorReady", {
+                    windowID
+                });
+            }, 0);
+            simplemde.codemirror.on("change", function () {
+                ipc.send("edit", {
+                    windowID,
+                    contents: simplemde.value()
+                });
+            });
+        </script>
+    </body>
 </html>
