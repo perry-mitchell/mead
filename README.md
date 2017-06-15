@@ -13,7 +13,7 @@ For specifics on the markdown editor and preview be sure to check out the [Simpl
 ## Features
 Mead has a unique in-place markdown editor, which is actually SimpleMDE - It offers an interface to edit markdown in the same styling it describes. It also has a **preview pane** for side-by-side comparison.
 
-Mead supports saving and loading files and multiple windows.
+Mead supports saving and loading files and multiple windows. It has hotkey support (New, Open and Save) and supports creating new documents.
 
 ## Developing
 After running `npm install`, simply run `npm start` to start the app.
