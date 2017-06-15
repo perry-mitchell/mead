@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Mead - Markdown Editor</title>
+    <title>Mead • Markdown Editor</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
   </head>
@@ -63,7 +63,7 @@
             autoDownloadFontAwesome: true,
             autofocus: true,
             autosave: {
-                enabled: true,
+                enabled: false,
                 uniqueId: "mead-dev"
             },
             blockStyles: {
@@ -80,6 +80,42 @@
         });
         simplemde.toggleFullScreen();
         simplemde.toggleSideBySide();
+    </script>
+    <script>
+        const dirtyTitle = /^\* /;
+        var windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
+        var ipc = require('electron').ipcRenderer;
+        ipc.on("setContents", (event, data) => {
+            simplemde.value(data.contents);
+            document.title = `${data.filename} • Mead`;
+        });
+        ipc.on("setFilename", (event, data) => {
+            document.title = `${data.filename} • Mead`;
+        });
+        ipc.on("saveNow", () => {
+            ipc.send("save", {
+                windowID,
+                contents: simplemde.value()
+            });
+        });
+        ipc.on("setDirty", (evt, info) => {
+            const { dirty } = info;
+            const titleIsDirty = dirtyTitle.test(document.title);
+            if (dirty && !titleIsDirty) {
+                document.title = "* " + document.title;
+            } else if (!dirty && titleIsDirty) {
+                document.title = document.title.replace(dirtyTitle, "");
+            }
+        });
+        setTimeout(function() {
+            ipc.send("editorReady", { windowID });
+        }, 0);
+        simplemde.codemirror.on("change", function(){
+            ipc.send("edit", {
+                windowID,
+                contents: simplemde.value()
+            });
+        });
     </script>
   </body>
 </html>
