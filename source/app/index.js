@@ -124,6 +124,9 @@ function createWindow(filePath = null) {
     electronLocalshortcut.register(win, "CmdOrCtrl+N", () => {
         createWindow();
     });
+    electronLocalshortcut.register(win, "CmdOrCtrl+O", () => {
+        openInCurrent();
+    });
 
     // Open the DevTools.
     win.webContents.openDevTools()
@@ -144,6 +147,30 @@ function createWindow(filePath = null) {
     };
 }
 
+function openInCurrent() {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    const windowID = Object.keys(windows).find(key => windows[key].window === focusedWindow);
+    if (windowID) {
+        const { window } = windows[windowID];
+        // focusedWindow.webContents.send("saveNow");
+        dialog.showOpenDialog(window, {
+            title: "Open markdown file"
+        }, function (filenames) {
+            const filename = Array.isArray(filenames) && filenames.shift();
+            if (filename) {
+                windows[windowID].filePath = filename;
+                const contents = fs.readFileSync(filename, "utf8");
+                windows[windowID].dirty = false;
+                window.webContents.send("setContents", {
+                    filename: path.basename(filename),
+                    contents
+                });
+                window.webContents.send("setDirty", { dirty: false });
+            }
+        });
+    }
+}
+
 function saveCurrent() {
     const focusedWindow = BrowserWindow.getFocusedWindow();
     const windowKey = Object.keys(windows).find(key => windows[key].window === focusedWindow);
@@ -158,6 +185,10 @@ function setMenu() {
         submenu: [{
                 label: "New",
                 click: () => createWindow()
+            },
+            {
+                label: "Open",
+                click: openInCurrent
             },
             {
                 label: "Save",
