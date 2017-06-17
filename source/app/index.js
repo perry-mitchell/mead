@@ -3,10 +3,8 @@ const {
     dialog,
     BrowserWindow,
     Menu,
-    ipcMain,
-    globalShortcut
+    ipcMain
 } = require("electron");
-const electronLocalshortcut = require("electron-localshortcut");
 const path = require("path");
 const fs = require("fs");
 const pify = require("pify");
@@ -118,16 +116,6 @@ function createWindow(filePath = null) {
     const url = fileUrl(path.resolve(__dirname, "../renderer/index.html"));
     win.loadURL(`${url}?id=${winID}`);
 
-    electronLocalshortcut.register(win, "CmdOrCtrl+S", () => {
-        saveCurrent();
-    });
-    electronLocalshortcut.register(win, "CmdOrCtrl+N", () => {
-        createWindow();
-    });
-    electronLocalshortcut.register(win, "CmdOrCtrl+O", () => {
-        openInCurrent();
-    });
-
     // Open the DevTools.
     win.webContents.openDevTools()
 
@@ -182,24 +170,29 @@ function saveCurrent() {
 function setMenu() {
     const menuTemplate = [{
         label: "File",
-        submenu: [{
+        submenu: [
+            {
                 label: "New",
-                click: () => createWindow()
+                click: () => createWindow(),
+                accelerator: "CmdOrCtrl+N"
             },
             {
                 label: "Open",
-                click: openInCurrent
+                click: openInCurrent,
+                accelerator: "CmdOrCtrl+O"
             },
             {
                 label: "Save",
-                click: saveCurrent
+                click: saveCurrent,
+                accelerator: "CmdOrCtrl+S"
             }
         ]
     }];
     if (process.platform === "darwin") {
         menuTemplate.unshift({
             label: app.getName(),
-            submenu: [{
+            submenu: [
+                {
                     role: "about"
                 },
                 {
