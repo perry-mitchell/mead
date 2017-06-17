@@ -1,13 +1,13 @@
 {
   "name": "mead",
   "productName": "Mead",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Markdown Editor",
   "main": "source/app/index.js",
   "scripts": {
-    "start": "electron .",
     "dist": "build --mac --win --linux",
     "dist:current": "build",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Perry Mitchell <perry@perrymitchell.net>",
