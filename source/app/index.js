@@ -229,6 +229,15 @@ function setMenu() {
             { role: 'selectall' }
         ]
     }, {
+        label: 'View',
+        submenu: [
+            { role: 'reload' },
+            { role: 'forcereload' },
+            { role: 'toggledevtools' },
+            { type: 'separator' },
+            { role: 'togglefullscreen' }
+        ]
+    }, {
         role: 'window',
         submenu: [
             {role: 'minimize'},
