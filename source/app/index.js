@@ -58,7 +58,13 @@ ipcMain.on("save", function (event, info) {
         });
     } else {
         dialog.showSaveDialog(window, {
-            title: "Save new markdown file"
+            title: "Save new markdown file",
+            filters: [
+                {
+                    name: "Markdown Files",
+                    extensions: ["md"]
+                }
+            ]
         }, function (filename) {
             if (filename) {
                 windows[windowID].filePath = filename;
@@ -147,7 +153,24 @@ function openInCurrent() {
         const { window } = windows[windowID];
         // focusedWindow.webContents.send("saveNow");
         dialog.showOpenDialog(window, {
-            title: "Open markdown file"
+            title: "Open markdown file",
+            filters: [
+                {
+                    name: "Markdown Files",
+                    // Thanks to:
+                    // https://github.com/sindresorhus/markdown-extensions/blob/master/markdown-extensions.json
+                    extensions: [
+                        "md",
+                        "markdown",
+                        "mdown",
+                        "mkdn",
+                        "mkd",
+                        "mdwn",
+                        "mkdown",
+                        "ron"
+                    ]
+                }
+            ]
         }, function (filenames) {
             const filename = Array.isArray(filenames) && filenames.shift();
             if (filename) {
