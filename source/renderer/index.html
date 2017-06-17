@@ -19,10 +19,10 @@
             }
             .CodeMirror {
                 height: 100%;
-                font-family: 'Roboto Mono', monospace;
+                font-family: "Roboto Mono", monospace;
             }
             .editor-preview-side {
-                font-family: 'Muli', sans-serif;
+                font-family: "Muli", sans-serif;
             }
         </style>
         <script type="text/javascript" src="simplemde.js"></script>
@@ -75,7 +75,7 @@
         <script>
             const dirtyTitle = /^\* /;
             const windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
-            const ipc = require('electron').ipcRenderer;
+            const ipc = require("electron").ipcRenderer;
             ipc.on("setContents", (event, data) => {
                 simplemde.value(data.contents);
                 document.title = `${data.filename} • Mead`;

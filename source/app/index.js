@@ -125,7 +125,7 @@ function createWindow(filePath = null) {
     const url = fileUrl(path.resolve(__dirname, "../renderer/index.html"));
     win.loadURL(`${url}?id=${winID}`);
 
-    // Open the DevTools we're in dev environment
+    // Open the DevTools we"re in dev environment
     if (IS_DEV) {
         win.webContents.openDevTools()
     }
@@ -216,45 +216,45 @@ function setMenu() {
             }
         ]
     }, {
-        label: 'Edit',
+        label: "Edit",
         submenu: [
-            { role: 'undo' },
-            { role: 'redo' },
-            { type: 'separator' },
-            { role: 'cut' },
-            { role: 'copy' },
-            { role: 'paste' },
-            { role: 'pasteandmatchstyle' },
-            { role: 'delete' },
-            { role: 'selectall' }
+            { role: "undo" },
+            { role: "redo" },
+            { type: "separator" },
+            { role: "cut" },
+            { role: "copy" },
+            { role: "paste" },
+            { role: "pasteandmatchstyle" },
+            { role: "delete" },
+            { role: "selectall" }
         ]
     }, {
-        label: 'View',
+        label: "View",
         submenu: [
-            { role: 'toggledevtools' },
-            { type: 'separator' },
-            { role: 'togglefullscreen' }
+            { role: "toggledevtools" },
+            { type: "separator" },
+            { role: "togglefullscreen" }
         ]
     }, {
-        role: 'window',
+        role: "window",
         submenu: [
-            {role: 'minimize'},
-            {role: 'close'}
+            {role: "minimize"},
+            {role: "close"}
         ]
     }];
     if (process.platform === "darwin") {
         menuTemplate.unshift({
             label: app.getName(),
             submenu: [
-                { role: 'about' },
-                { type: 'separator' },
-                { role: 'services', submenu: [] },
-                { type: 'separator' },
-                { role: 'hide' },
-                { role: 'hideothers' },
-                { role: 'unhide' },
-                { type: 'separator' },
-                { role: 'quit' }
+                { role: "about" },
+                { type: "separator" },
+                { role: "services", submenu: [] },
+                { type: "separator" },
+                { role: "hide" },
+                { role: "hideothers" },
+                { role: "unhide" },
+                { type: "separator" },
+                { role: "quit" }
             ]
         })
     }
