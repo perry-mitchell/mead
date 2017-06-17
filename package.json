@@ -1,20 +1,55 @@
 {
   "name": "mead",
+  "productName": "Mead",
   "version": "0.1.0",
-  "description": "Markdown editor",
+  "description": "Markdown Editor",
   "main": "source/app/index.js",
   "scripts": {
     "start": "electron .",
+    "dist": "build --mac --win --linux",
+    "dist:current": "build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Perry Mitchell <perry@perrymitchell.net>",
   "license": "MIT",
+  "build": {
+    "appId": "net.perrymitchell.mead",
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "nsis": {
+      "perMachine": true
+    },
+    "linux": {
+      "target": [
+        "rpm",
+        "AppImage",
+        "deb"
+      ],
+      "packageCategory": "text",
+      "synopsis": "Mead: A simple Markdown Editor"
+    },
+    "fileAssociations": {
+      "ext": [
+        "md",
+        "markdown",
+        "mdown",
+        "mkdn",
+        "mkd",
+        "mdwn",
+        "mkdown",
+        "ron"
+      ],
+      "name": "Markdown Files",
+      "role": "Editor"
+    }
+  },
   "devDependencies": {
-    "electron": "^1.6.10"
+    "electron": "^1.6.10",
+    "electron-builder": "^19.4.2"
   },
   "dependencies": {
     "debounce": "^1.0.2",
-    "electron-localshortcut": "^2.0.0",
     "file-url": "^2.0.2",
     "minimist": "^1.2.0",
     "pify": "^3.0.0"

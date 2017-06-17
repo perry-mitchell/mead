@@ -46,8 +46,8 @@
                 }
                 return newText;
             }
-            var ta = document.getElementById("main");
-            var simplemde = new SimpleMDE({
+            const ta = document.getElementById("main");
+            const simplemde = new SimpleMDE({
                 element: ta,
                 autoDownloadFontAwesome: true,
                 autofocus: true,
@@ -58,9 +58,7 @@
                 blockStyles: {
                     italic: "_"
                 },
-                previewRender: function (text) {
-                    return simplemde.markdown(fixMDImages(text));
-                },
+                previewRender: text => simplemde.markdown(fixMDImages(text)),
                 renderingConfig: {
                     codeSyntaxHighlighting: true
                 },
@@ -76,8 +74,8 @@
         </script>
         <script>
             const dirtyTitle = /^\* /;
-            var windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
-            var ipc = require('electron').ipcRenderer;
+            const windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
+            const ipc = require('electron').ipcRenderer;
             ipc.on("setContents", (event, data) => {
                 simplemde.value(data.contents);
                 document.title = `${data.filename} • Mead`;

@@ -3,10 +3,8 @@ const {
     dialog,
     BrowserWindow,
     Menu,
-    ipcMain,
-    globalShortcut
+    ipcMain
 } = require("electron");
-const electronLocalshortcut = require("electron-localshortcut");
 const path = require("path");
 const fs = require("fs");
 const pify = require("pify");
@@ -15,6 +13,9 @@ const fileUrl = require("file-url");
 const argv = require("minimist")(process.argv.slice(2));
 
 const readFile = pify(fs.readFile);
+
+// Detect development environment
+const IS_DEV = /\/electron\//.test(process.execPath);
 
 // Keep a global reference of the window object, if you don"t, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -57,7 +58,13 @@ ipcMain.on("save", function (event, info) {
         });
     } else {
         dialog.showSaveDialog(window, {
-            title: "Save new markdown file"
+            title: "Save new markdown file",
+            filters: [
+                {
+                    name: "Markdown Files",
+                    extensions: ["md"]
+                }
+            ]
         }, function (filename) {
             if (filename) {
                 windows[windowID].filePath = filename;
@@ -118,18 +125,10 @@ function createWindow(filePath = null) {
     const url = fileUrl(path.resolve(__dirname, "../renderer/index.html"));
     win.loadURL(`${url}?id=${winID}`);
 
-    electronLocalshortcut.register(win, "CmdOrCtrl+S", () => {
-        saveCurrent();
-    });
-    electronLocalshortcut.register(win, "CmdOrCtrl+N", () => {
-        createWindow();
-    });
-    electronLocalshortcut.register(win, "CmdOrCtrl+O", () => {
-        openInCurrent();
-    });
-
-    // Open the DevTools.
-    win.webContents.openDevTools()
+    // Open the DevTools we're in dev environment
+    if (IS_DEV) {
+        win.webContents.openDevTools()
+    }
 
     // Emitted when the window is closed.
     win.on("closed", () => {
@@ -154,7 +153,24 @@ function openInCurrent() {
         const { window } = windows[windowID];
         // focusedWindow.webContents.send("saveNow");
         dialog.showOpenDialog(window, {
-            title: "Open markdown file"
+            title: "Open markdown file",
+            filters: [
+                {
+                    name: "Markdown Files",
+                    // Thanks to:
+                    // https://github.com/sindresorhus/markdown-extensions/blob/master/markdown-extensions.json
+                    extensions: [
+                        "md",
+                        "markdown",
+                        "mdown",
+                        "mkdn",
+                        "mkd",
+                        "mdwn",
+                        "mkdown",
+                        "ron"
+                    ]
+                }
+            ]
         }, function (filenames) {
             const filename = Array.isArray(filenames) && filenames.shift();
             if (filename) {
@@ -182,29 +198,63 @@ function saveCurrent() {
 function setMenu() {
     const menuTemplate = [{
         label: "File",
-        submenu: [{
+        submenu: [
+            {
                 label: "New",
-                click: () => createWindow()
+                click: () => createWindow(),
+                accelerator: "CmdOrCtrl+N"
             },
             {
                 label: "Open",
-                click: openInCurrent
+                click: openInCurrent,
+                accelerator: "CmdOrCtrl+O"
             },
             {
                 label: "Save",
-                click: saveCurrent
+                click: saveCurrent,
+                accelerator: "CmdOrCtrl+S"
             }
+        ]
+    }, {
+        label: 'Edit',
+        submenu: [
+            { role: 'undo' },
+            { role: 'redo' },
+            { type: 'separator' },
+            { role: 'cut' },
+            { role: 'copy' },
+            { role: 'paste' },
+            { role: 'pasteandmatchstyle' },
+            { role: 'delete' },
+            { role: 'selectall' }
+        ]
+    }, {
+        label: 'View',
+        submenu: [
+            { role: 'toggledevtools' },
+            { type: 'separator' },
+            { role: 'togglefullscreen' }
+        ]
+    }, {
+        role: 'window',
+        submenu: [
+            {role: 'minimize'},
+            {role: 'close'}
         ]
     }];
     if (process.platform === "darwin") {
         menuTemplate.unshift({
             label: app.getName(),
-            submenu: [{
-                    role: "about"
-                },
-                {
-                    role: "quit"
-                }
+            submenu: [
+                { role: 'about' },
+                { type: 'separator' },
+                { role: 'services', submenu: [] },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'hideothers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { role: 'quit' }
             ]
         })
     }
