@@ -14,6 +14,9 @@ const argv = require("minimist")(process.argv.slice(2));
 
 const readFile = pify(fs.readFile);
 
+// Detect development environment
+const IS_DEV = /\/electron\//.test(process.execPath);
+
 // Keep a global reference of the window object, if you don"t, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 // let win
@@ -116,8 +119,10 @@ function createWindow(filePath = null) {
     const url = fileUrl(path.resolve(__dirname, "../renderer/index.html"));
     win.loadURL(`${url}?id=${winID}`);
 
-    // Open the DevTools.
-    win.webContents.openDevTools()
+    // Open the DevTools we're in dev environment
+    if (IS_DEV) {
+        win.webContents.openDevTools()
+    }
 
     // Emitted when the window is closed.
     win.on("closed", () => {
@@ -187,17 +192,39 @@ function setMenu() {
                 accelerator: "CmdOrCtrl+S"
             }
         ]
+    }, {
+        label: 'Edit',
+        submenu: [
+            { role: 'undo' },
+            { role: 'redo' },
+            { type: 'separator' },
+            { role: 'cut' },
+            { role: 'copy' },
+            { role: 'paste' },
+            { role: 'pasteandmatchstyle' },
+            { role: 'delete' },
+            { role: 'selectall' }
+        ]
+    }, {
+        role: 'window',
+        submenu: [
+            {role: 'minimize'},
+            {role: 'close'}
+        ]
     }];
     if (process.platform === "darwin") {
         menuTemplate.unshift({
             label: app.getName(),
             submenu: [
-                {
-                    role: "about"
-                },
-                {
-                    role: "quit"
-                }
+                { role: 'about' },
+                { type: 'separator' },
+                { role: 'services', submenu: [] },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'hideothers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { role: 'quit' }
             ]
         })
     }
