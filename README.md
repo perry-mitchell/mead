@@ -1,7 +1,7 @@
 # Mead
 Dead simple markdown editor for Windows, Linux and Mac
 
-![Mead markdown editor](preview-macos.jpg)
+![Mead markdown editor](https://github.com/perry-mitchell/mead/raw/master/preview-macos.jpg)
 
 _Based mostly on the **beautful** [SimpleMDE markdown editor](https://simplemde.com/)._
 
