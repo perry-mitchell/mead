@@ -3,13 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <title>Mead • Markdown Editor</title>
-        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
-    </head>
-    <body>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css">
-        <link rel="stylesheet" href="simplemde.css">
+        <link rel="stylesheet" href="./static/css/fonts.css">
+        <link rel="stylesheet" href="./static/css/simplemde.css">
+        <link rel="stylesheet" href="./static/css/github.css">
+        <link rel="stylesheet" href="./static/css/font-awesome.css">
         <style type="text/css">
             html {
                 height: 100%;
@@ -25,9 +22,11 @@
                 font-family: "Muli", sans-serif;
             }
         </style>
-        <script type="text/javascript" src="simplemde.js"></script>
-
+    </head>
+    <body>
         <textarea id="main"></textarea>
+        <script type="text/javascript" src="./static/js/highlight.pack.js"></script>
+        <script type="text/javascript" src="./static/js/simplemde.js"></script>
         <script>
             const path = require("path");
             function fixMDImages(text) {
@@ -49,7 +48,7 @@
             const ta = document.getElementById("main");
             const simplemde = new SimpleMDE({
                 element: ta,
-                autoDownloadFontAwesome: true,
+                autoDownloadFontAwesome: false,
                 autofocus: true,
                 autosave: {
                     enabled: false,
@@ -71,8 +70,7 @@
             });
             simplemde.toggleFullScreen();
             simplemde.toggleSideBySide();
-        </script>
-        <script>
+
             const dirtyTitle = /^\* /;
             const windowID = /id=([^&?#]+)/.exec(window.location.href)[1];
             const ipc = require("electron").ipcRenderer;
